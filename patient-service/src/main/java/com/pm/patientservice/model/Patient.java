@@ -1,7 +1,9 @@
 package com.pm.patientservice.model;
 
+import com.pm.patientservice.dto.validator.CreatePatientValidationGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,10 +33,12 @@ public class Patient {
     private String address;
 
     @NotNull
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @NotNull
-    private LocalDate RegistrationDate;
+    @NotBlank(groups = CreatePatientValidationGroup.class, message = "Registration date is required")
+    @Column(name = "registered_date")
+    private LocalDate registrationDate;
 
     public UUID getId() {
         return id;
@@ -77,11 +81,11 @@ public class Patient {
     }
 
     public LocalDate getRegistrationDate() {
-        return RegistrationDate;
+        return registrationDate;
     }
 
     public void setRegistrationDate(LocalDate registrationDate) {
-        RegistrationDate = registrationDate;
+        this.registrationDate = registrationDate;
     }
 
 }

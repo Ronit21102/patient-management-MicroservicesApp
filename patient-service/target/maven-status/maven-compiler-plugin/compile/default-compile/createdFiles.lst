@@ -1,6 +1,0 @@
-com\pm\patientservice\PatientServiceApplication.class
-com\pm\patientservice\controller\PatientController.class
-com\pm\patientservice\exception\ResourceNotFoundException.class
-com\pm\patientservice\exception\GlobalExceptionHandler.class
-com\pm\patientservice\exception\ResourceAlreadyExistsException.class
-com\pm\patientservice\model\Patient.class
