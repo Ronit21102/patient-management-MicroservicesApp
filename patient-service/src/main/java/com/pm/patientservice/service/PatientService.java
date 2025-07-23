@@ -5,6 +5,7 @@ import com.pm.patientservice.dto.PatientResponseDto;
 import com.pm.patientservice.exception.PatientNotFoundException;
 import com.pm.patientservice.exception.ResourceAlreadyExistsException;
 import com.pm.patientservice.grpc.BillingsServiceGrpcClient;
+import com.pm.patientservice.kafka.kafkaProducer;
 import com.pm.patientservice.mapper.PatientMapper;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
@@ -18,10 +19,11 @@ import java.util.UUID;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final BillingsServiceGrpcClient billingsServiceGrpcClient;
-
-    public PatientService(PatientRepository patientRepository , BillingsServiceGrpcClient billingsServiceGrpcClient) {
+    private final kafkaProducer kafkaProducer;
+    public PatientService(PatientRepository patientRepository , BillingsServiceGrpcClient billingsServiceGrpcClient, kafkaProducer kafkaProducer) {
         this.billingsServiceGrpcClient = billingsServiceGrpcClient;
         this.patientRepository = patientRepository;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<PatientResponseDto> getPatients() {
@@ -38,6 +40,8 @@ public class PatientService {
         }
         Patient savedPatient = patientRepository.save(PatientMapper.toModel(patientRequestDto));
         billingsServiceGrpcClient.createBillingRequest(savedPatient.getId().toString(), savedPatient.getName(), savedPatient.getEmail());
+
+        kafkaProducer.sendEvent(savedPatient);
         return PatientMapper.toDto(savedPatient);
     }
 
